@@ -13,7 +13,7 @@ import {
 // import { Meta } from '../dominio/Meta';
 
 @Entity({ tableName: 'goals' })
-export class Goal {
+export class GoalEntity {
   // 1. Atributos Requeridos por ORM
   @PrimaryKey()
   id!: number; // Clave primaria, manejada por la DB
@@ -41,15 +41,15 @@ export class Goal {
   // 4. Atributos de Jerarquía (HU 1.2)
 
   // Relación Opcional: Muchas submetas (hijos) pueden pertenecer a una Meta (padre)
-  @ManyToOne(() => Goal, { nullable: true })
-  meta_padre?: Goal | null;
+  @ManyToOne(() => GoalEntity, { nullable: true })
+  meta_padre?: GoalEntity | null;
 
   // Relación Colección: Una Meta (padre) puede tener muchas submetas (hijos)
-  @OneToMany(() => Goal, (meta) => meta.meta_padre)
-  submetas = new Collection<Goal>(this);
+  @OneToMany(() => GoalEntity, (meta) => meta.meta_padre)
+  submetas = new Collection<GoalEntity>(this);
 
   // Constructor simple
-  constructor(nombre: string, coste_subjetivo: number, meta_padre?: Goal) {
+  constructor(nombre: string, coste_subjetivo: number, meta_padre?: GoalEntity) {
     this.nombre = nombre;
     this.coste_subjetivo = coste_subjetivo;
     if (meta_padre) {

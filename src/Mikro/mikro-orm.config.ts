@@ -2,7 +2,7 @@
 
 import { defineConfig } from '@mikro-orm/sqlite';
 import { Migrator } from '@mikro-orm/migrations';
-import { Goal } from './entities/Goal';
+import { GoalEntity } from './entities/GoalEntity';
 // import { Meta } from './src/dominio/meta.entity'; // Asegúrate de que esta ruta sea correcta
 
 // La función defineConfig infiere automáticamente el driver (sqlite)
@@ -12,7 +12,7 @@ const config = defineConfig({
   // Define tus entidades aquí.
   // Es mejor usar directamente la clase si ya la importaste,
   // en lugar de depender de rutas de archivos compilados (.js)
-  entities: [Goal],
+  entities: [GoalEntity],
   entitiesTs: ['./src/dominio/**/*.entity.ts'],
 
   // La propiedad 'type' es eliminada y reemplazada por el driver
