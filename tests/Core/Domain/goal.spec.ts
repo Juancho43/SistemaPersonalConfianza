@@ -2,8 +2,8 @@ import { Goal } from '../../../core/Domain/Goal';
 
 describe('Goal', () => {
   test('creates with valid coste_subjetivo and default estado', () => {
-    const g = Goal.create('Test Goal', 50, 1);
-    expect(g.id).toBe(1);
+    const g = Goal.create('Test Goal', 50, 'PENDIENTE','1');
+    expect(g.id).toBe('1');
     expect(g.estado).toBe('PENDIENTE');
   });
 

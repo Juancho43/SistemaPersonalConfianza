@@ -15,11 +15,11 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document); // La ruta de la documentación será /api/docs
+  SwaggerModule.setup('/docs', app, document); // La ruta de la documentación será /api/docs
   // ---------------------------------
 
   // Para el frontend de Angular/CORS
   app.enableCors();
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3002);
 }
 bootstrap();
