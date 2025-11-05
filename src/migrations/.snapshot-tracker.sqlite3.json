@@ -13,6 +13,58 @@
           "length": null,
           "mappedType": "text"
         },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "default": "'Guest'",
+          "mappedType": "text"
+        },
+        "total_confidence": {
+          "name": "total_confidence",
+          "type": "integer",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "default": "0",
+          "mappedType": "integer"
+        }
+      },
+      "name": "profiles",
+      "indexes": [
+        {
+          "keyName": "primary",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "text"
+        },
         "nombre": {
           "name": "nombre",
           "type": "text",
@@ -51,7 +103,6 @@
           "primary": false,
           "nullable": false,
           "length": 20,
-          "default": "'PENDIENTE'",
           "mappedType": "text"
         },
         "penalizacion_restada": {
@@ -75,6 +126,16 @@
           "length": null,
           "default": "0",
           "mappedType": "integer"
+        },
+        "profile_id": {
+          "name": "profile_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "text"
         },
         "meta_padre_id": {
           "name": "meta_padre_id",
@@ -111,6 +172,16 @@
       "indexes": [
         {
           "columnNames": [
+            "profile_id"
+          ],
+          "composite": false,
+          "keyName": "goals_profile_id_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
             "meta_padre_id"
           ],
           "composite": false,
@@ -132,6 +203,18 @@
       ],
       "checks": [],
       "foreignKeys": {
+        "goals_profile_id_foreign": {
+          "constraintName": "goals_profile_id_foreign",
+          "columnNames": [
+            "profile_id"
+          ],
+          "localTableName": "goals",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "profiles",
+          "updateRule": "cascade"
+        },
         "goals_meta_padre_id_foreign": {
           "constraintName": "goals_meta_padre_id_foreign",
           "columnNames": [
