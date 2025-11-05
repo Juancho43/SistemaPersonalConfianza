@@ -1,11 +1,12 @@
 import {
+  Collection,
   Entity,
-  PrimaryKey,
-  Property,
   ManyToOne,
   OneToMany,
-  Collection,
+  PrimaryKey,
+  Property,
 } from '@mikro-orm/core';
+import { ProfileEntity } from './ProfileEntity';
 
 @Entity({ tableName: 'goals' })
 export class GoalEntity {
@@ -23,14 +24,15 @@ export class GoalEntity {
   coste_subjetivo!: number;
 
   @Property({ length: 20 })
-  estado: 'PENDIENTE' | 'COMPLETADA' | 'ABANDONADA' = 'PENDIENTE';
+  estado: string;
 
   @Property()
   penalizacion_restada: number = 0;
 
   @Property()
   puntos_ganados: number = 0;
-
+  @ManyToOne(() => ProfileEntity, { inversedBy: 'goals' })
+  profile!: ProfileEntity;
   // Relación con el padre
   @ManyToOne(() => GoalEntity, { nullable: true })
   meta_padre?: GoalEntity;
@@ -57,5 +59,4 @@ export class GoalEntity {
       this.meta_padre = meta_padre;
     }
   }
-
 }
