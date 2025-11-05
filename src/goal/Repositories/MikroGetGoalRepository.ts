@@ -4,6 +4,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { GoalEntity } from '../../Mikro/entities/GoalEntity';
 import { GoalMapper } from './GoalMapper';
 import { Injectable } from '@nestjs/common';
+
 @Injectable()
 export class MikroGetGoalRepository implements GetGoalByIdInterface {
   constructor(
@@ -13,7 +14,7 @@ export class MikroGetGoalRepository implements GetGoalByIdInterface {
     const entity = await this.em.findOne(
       GoalEntity,
       { id },
-      { populate: ['submetas', 'submetas.submetas'] }
+      { populate: ['submetas', 'submetas.submetas'] },
     );
     return entity ? GoalMapper.toDomain(entity) : null;
   }

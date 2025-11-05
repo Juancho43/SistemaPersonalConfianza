@@ -1,6 +1,6 @@
 import { Profile } from '../../Domain/Profile';
 
-export class ProfileResponse{
+export class ProfileResponse {
   static generate(profile: Profile) {
     return {
       id: profile.id ?? '',

@@ -3,7 +3,7 @@ import { CreateProfileRequest } from './DTO/CreateProfileRequest';
 import { Profile } from '../Domain/Profile';
 import { randomUUID } from 'node:crypto';
 
-export class CreateProfile{
+export class CreateProfile {
   constructor(private readonly saveProfile: CreateProfileInterface) {}
 
   async execute(request: CreateProfileRequest) {
@@ -11,5 +11,4 @@ export class CreateProfile{
     await this.saveProfile.save(profile);
     return profile;
   }
-
 }

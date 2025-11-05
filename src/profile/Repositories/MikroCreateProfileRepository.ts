@@ -4,6 +4,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { ProfileMapper } from './ProfileMapper';
 import { ProfileEntity } from '../../Mikro/entities/ProfileEntity';
 import { Injectable } from '@nestjs/common';
+
 @Injectable()
 export class MikroCreateProfileRepository implements CreateProfileInterface {
   constructor(private readonly em: EntityManager) {}

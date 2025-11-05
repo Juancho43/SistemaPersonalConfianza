@@ -10,7 +10,7 @@ export class CreateGoal {
   constructor(
     private createGoalInterface: CreateGoalInterface,
     private getById: GetGoalById,
-    private getProfile: GetProfileById
+    private getProfile: GetProfileById,
   ) {}
   async execute(request: CreateGoalRequest): Promise<Goal> {
     const profile = await this.getProfile.execute(request.profileId!);

@@ -5,6 +5,7 @@ import { GoalMapper } from './GoalMapper';
 import { GoalEntity } from '../../Mikro/entities/GoalEntity';
 import { Injectable } from '@nestjs/common';
 import { ProfileEntity } from '../../Mikro/entities/ProfileEntity';
+
 @Injectable()
 export class MikroSaveGoalRepository implements CreateGoalInterface {
   constructor(private readonly em: EntityManager) {}

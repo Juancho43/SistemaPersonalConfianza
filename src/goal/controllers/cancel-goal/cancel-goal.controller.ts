@@ -2,6 +2,7 @@ import { Body, Controller, Put } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { GoalService } from '../../services/goal.service';
 import { CancelGoalRequest } from '../../../../core/Goal/Application/DTO/CancelGoalRequest';
+
 @ApiTags('Goal')
 @Controller('goal')
 export class CancelGoalController {

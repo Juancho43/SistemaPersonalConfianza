@@ -9,7 +9,6 @@ export class GoalResponse {
       description: goal.descripcion,
       state: goal.estado,
       goals: this.generateCollection(goal.submetas || []),
-
     };
   }
 

@@ -2,6 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { ProfileService } from '../../profile.service';
 import { CreateProfileRequest } from '../../../../core/Profile/Application/DTO/CreateProfileRequest';
+
 @ApiTags('Profile')
 @Controller('profile')
 export class CreateProfileController {
