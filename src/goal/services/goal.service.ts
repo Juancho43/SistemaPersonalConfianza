@@ -39,7 +39,6 @@ export class GoalService {
       this.profileService.create,
     );
     this.updateGoal = new UpdateGoal(
-      this.getGoalById,
       this.createGoalRepository,
       this.profileService.getProfile,
       this.profileService.create,

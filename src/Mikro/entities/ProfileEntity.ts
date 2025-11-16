@@ -29,6 +29,7 @@ export class ProfileEntity {
   // 'mappedBy' indica la propiedad en la entidad Goal que apunta de vuelta a Profile.
   @OneToMany(() => GoalEntity, (goal) => goal.profile, {
     cascade: [Cascade.PERSIST, Cascade.REMOVE],
+    where: { meta_padre: null },
   })
   goals = new Collection<GoalEntity>(this);
 

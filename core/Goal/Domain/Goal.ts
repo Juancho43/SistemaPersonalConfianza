@@ -42,11 +42,15 @@ export class Goal {
   set padre(value: Goal | null) {
     this._padre = value;
   }
-
   public marcar_abandonada(): void {
     if (this._estado.getValue() === 'PENDIENTE') {
       this._estado = GoalState.ABANDONED();
       this._penalizacion_restada = this._coste_subjetivo * 0.5;
+
+      // Cancelar también las submetas (propaga recursivamente)
+      for (const sub of this._submetas) {
+        sub.marcar_abandonada();
+      }
     }
   }
 

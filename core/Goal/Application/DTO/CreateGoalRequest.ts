@@ -5,5 +5,4 @@ export class CreateGoalRequest  {
   state: 'PENDIENTE' | 'COMPLETADA' | 'ABANDONADA'
   profileId?: string;
   parentGoalId?: string;
-
 }

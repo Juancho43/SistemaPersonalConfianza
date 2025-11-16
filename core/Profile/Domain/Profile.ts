@@ -1,4 +1,5 @@
 import { Goal } from '../../Goal/Domain/Goal';
+import { GoalState } from '../../Goal/Domain/GoalState';
 
 export class Profile {
   get id(): string {
@@ -35,12 +36,15 @@ export class Profile {
 
   // Método para agregar la meta
   public addGoal(goal: Goal): void {
+    if (goal.padre && goal.padre.estado != GoalState.PENDING().getValue()) {
+      throw new Error('Cannot add a subgoal to a non-pending parent goal.');
+    }
     this._goals.push(goal);
   }
 
   // Método clave para completar la meta y sumar puntos
   public completeGoal(goalId: string): Goal {
-    const goalToComplete = this._goals.find((g) => g.id === goalId);
+    const goalToComplete = this.hasGoal(goalId);
 
     if (!goalToComplete) {
       throw new Error(`Goal with ID ${goalId} not found in profile.`);
@@ -59,7 +63,7 @@ export class Profile {
   }
 
   public cancelGoal(goalId: string): Goal {
-    const goalToCancel = this._goals.find((g) => g.id === goalId);
+    const goalToCancel = this.hasGoal(goalId);
     if (!goalToCancel) {
       throw new Error(`Goal with ID ${goalId} not found in profile.`);
     }
@@ -78,8 +82,8 @@ export class Profile {
   public updateGoalSubjectiveCost(
     goalId: string,
     newSubjectiveCost: number,
-  ): void {
-    const goal = this._goals.find((g) => g.id === goalId);
+  ): Goal {
+    const goal = this.hasGoal(goalId);
 
     if (!goal) {
       throw new Error(`Goal with ID ${goalId} not found in profile.`);
@@ -101,6 +105,7 @@ export class Profile {
 
     // Update the goal's subjective cost
     goal.coste_subjetivo = newSubjectiveCost;
+    return goal;
   }
 
   set name(value: string) {
@@ -113,5 +118,20 @@ export class Profile {
 
   set goals(value: Goal[]) {
     this._goals = value;
+  }
+  private hasGoal(goalId: string): Goal | null {
+    const findIn = (goals: Goal[]): Goal | null => {
+      for (const g of goals) {
+        if (g.id === goalId) return g;
+        const children = g.submetas;
+        if (Array.isArray(children)) {
+          const found = findIn(children);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    return findIn(this._goals);
   }
 }

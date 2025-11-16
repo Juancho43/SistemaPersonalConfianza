@@ -12,7 +12,13 @@ export class CancelGoal {
 
   async execute(request: CancelGoalRequest) {
     const profile = await this.getProfile.execute(request.profileId);
-    await this.saveGoal.save(profile.cancelGoal(request.goalId));
+    const canceledGoal = profile.cancelGoal(request.goalId);
+    await this.saveGoal.save(canceledGoal);
+    if (canceledGoal.submetas && canceledGoal.submetas.length) {
+      await Promise.all(
+        canceledGoal.submetas.map((sg) => this.saveGoal.save(sg)),
+      );
+    }
     await this.saveProfile.save(profile);
     return profile.totalConfidence;
   }
