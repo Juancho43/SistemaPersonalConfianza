@@ -8,6 +8,8 @@ export class GoalResponse {
       cost: goal.coste_subjetivo,
       description: goal.descripcion,
       state: goal.estado,
+      earnedPoints: goal.puntos_ganados,
+      penaltyApplied: goal.penalizacion_restada,
       goals: this.generateCollection(goal.submetas || []),
     };
   }

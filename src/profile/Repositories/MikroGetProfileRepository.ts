@@ -13,7 +13,7 @@ export class MikroGetProfileRepository implements GetProfileInterface {
     const entity = await this.em.findOne(
       ProfileEntity,
       { id },
-      { populate: ['goals', 'goals.submetas'] },
+      { populate: ['goals.submetas.submetas'] },
     );
 
     if (!entity) {

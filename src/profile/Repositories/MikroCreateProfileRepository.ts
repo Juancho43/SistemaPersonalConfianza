@@ -19,7 +19,6 @@ export class MikroCreateProfileRepository implements CreateProfileInterface {
     } else {
       this.em.persist(entity);
     }
-
     await this.em.flush();
   }
 }
