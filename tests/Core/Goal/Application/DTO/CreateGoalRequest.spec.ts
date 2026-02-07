@@ -9,14 +9,17 @@ describe('CreateGoalRequest', () => {
   // --- Caso 1: Inicialización con todos los parámetros opcionales ---
   it('debería inicializarse correctamente con todos los parámetros', () => {
     const request = new CreateGoalRequest(
+      'p1',
       name,
       cost,
       description,
       'ABANDONADA',
       parentGoalId,
+      'BASICA'
     );
 
     // Verificaciones
+    expect(request.profileId).toBe('p1');
     expect(request.name).toBe(name);
     expect(request.cost).toBe(cost);
     expect(request.description).toBe(description);
@@ -27,9 +30,10 @@ describe('CreateGoalRequest', () => {
   // --- Caso 2: Inicialización con solo parámetros requeridos y valores por defecto ---
   it('debería usar el valor por defecto "PENDIENTE" para el estado cuando no se provee', () => {
     // Solo proveemos los campos requeridos
-    const request = new CreateGoalRequest(name, cost);
+    const request = new CreateGoalRequest('p1',name, cost);
 
     // Verificaciones
+    expect(request.profileId).toBe('p1')
     expect(request.name).toBe(name);
     expect(request.cost).toBe(cost);
     // Verifica que los valores opcionales no provistos sean undefined/por defecto

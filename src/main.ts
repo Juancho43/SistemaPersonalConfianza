@@ -9,25 +9,74 @@ async function bootstrap() {
   // --- INICIALIZACIÓN DE MIKROORM (Creación del Esquema) ---
   try {
     const orm = app.get(MikroORM);
-
-    // Usar updateSchema() para crear tablas que falten
-    // Esto asegurará que el esquema coincida con tus entidades sin perder datos.
     const generator = orm.getSchemaGenerator();
+    const migrator = orm.getMigrator();
 
-    // Opcional: Asegúrate de que la base de datos (el archivo .sqlite) exista
+    // 1. Asegurarse de que la base de datos exista
     if (await generator.ensureDatabase()) {
-      console.log('Database file created (if it did not exist).');
+      console.log('📁 Archivo de base de datos creado.');
     }
 
-    // Actualiza el esquema, creando las tablas faltantes ('profiles' en este caso)
-    await generator.updateSchema();
+    // 2. Verificar si hay migraciones pendientes
+    const pendingMigrations = await migrator.getPendingMigrations();
+    const executedMigrations = await migrator.getExecutedMigrations();
 
-    console.log('✅ Esquema de base de datos actualizado y listo.');
+    if (executedMigrations.length === 0 && pendingMigrations.length === 0) {
+      // Primera vez: no hay migraciones en el sistema
+      console.log(
+        '🔧 Primera inicialización: creando esquema desde entidades...',
+      );
+      await generator.updateSchema();
+      console.log('✅ Esquema inicial creado.');
+    } else if (pendingMigrations.length > 0) {
+      // Hay migraciones pendientes
+      console.log(
+        `📦 ${pendingMigrations.length} migraciones pendientes detectadas:`,
+      );
+
+      pendingMigrations.forEach((migration) => {
+        console.log(`  - ${migration.name}`);
+      });
+
+      // En producción: advertir y NO ejecutar automáticamente
+      if (process.env.NODE_ENV === 'production') {
+        console.warn('⚠️  MIGRACIONES PENDIENTES EN PRODUCCIÓN');
+        console.warn('   Por seguridad, no se ejecutarán automáticamente.');
+        console.warn('   Ejecuta manualmente: npm run migration:up');
+        console.warn('   O configura AUTO_RUN_MIGRATIONS=true en .env');
+
+        // Opción 1: Detener la aplicación (más seguro)
+        if (process.env.AUTO_RUN_MIGRATIONS !== 'true') {
+          process.exit(1);
+        }
+
+        // Opción 2: Continuar con advertencia (si AUTO_RUN_MIGRATIONS=true)
+        console.log('🚀 Ejecutando migraciones en producción...');
+        await migrator.up();
+        console.log('✅ Migraciones ejecutadas correctamente.');
+      } else {
+        // En desarrollo: ejecutar automáticamente
+        console.log(
+          '🚀 Ejecutando migraciones automáticamente (modo desarrollo)...',
+        );
+        await migrator.up();
+        console.log('✅ Migraciones completadas.');
+      }
+    } else {
+      console.log(
+        '✅ Base de datos actualizada, no hay migraciones pendientes.',
+      );
+    }
+
+    console.log('✅ Sistema de base de datos listo.');
   } catch (error) {
-    console.error(
-      '❌ Error al inicializar el esquema de la base de datos:',
-      error,
-    );
+    console.error('❌ Error al inicializar el esquema/migraciones:', error);
+
+    // En producción, detener la aplicación si falla
+    if (process.env.NODE_ENV === 'production') {
+      process.exit(1);
+    }
+
     throw error;
   }
   // --------------------------------------------------------

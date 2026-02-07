@@ -2,8 +2,9 @@ import { CreateProfileInterface } from '../Domain/Persistance/CreateProfileInter
 import { CreateProfileRequest } from './DTO/CreateProfileRequest';
 import { Profile } from '../Domain/Profile';
 import { randomUUID } from 'node:crypto';
+import { IUseCase } from '../../Shared/IUseCase';
 
-export class CreateProfile {
+export class CreateProfile implements IUseCase<CreateProfileRequest, Profile> {
   constructor(private readonly saveProfile: CreateProfileInterface) {}
 
   async execute(request: CreateProfileRequest) {

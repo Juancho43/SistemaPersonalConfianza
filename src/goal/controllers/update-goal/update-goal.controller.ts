@@ -19,6 +19,7 @@ export class UpdateGoalController {
           description: 'Understand the basics of NestJS framework',
           cost: 34,
           state: 'PENDIENTE',
+          deadline: '2024-12-31',
         },
       },
     },

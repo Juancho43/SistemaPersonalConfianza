@@ -6,6 +6,11 @@ import { MikroCreateProfileRepository } from './Repositories/MikroCreateProfileR
 import { GetProfileByIdController } from './controllers/get-profile-by-id/get-profile-by-id.controller';
 import { GetGoalsController } from './controllers/get-goals/get-goals.controller';
 import { UpdateProfileController } from './controllers/update-profile/update-profile.controller';
+import { GetProfilesController } from './controllers/get-profiles/get-profiles.controller';
+import { MikroGetAllProfilesRepository } from './Repositories/MikroGetAllProfilesRepository';
+import { DeleteProfileController } from './controllers/delete-profile/delete-profile.controller';
+import { MikroSoftDeleteProfileRepository } from './Repositories/MikroSoftDeleteProfileRepository';
+import { MikroGetFilteredGoalsRepository } from './Repositories/MikroGetFilteredGoalsRepository';
 
 @Module({
   controllers: [
@@ -13,6 +18,8 @@ import { UpdateProfileController } from './controllers/update-profile/update-pro
     GetProfileByIdController,
     UpdateProfileController,
     GetGoalsController,
+    GetProfilesController,
+    DeleteProfileController,
   ],
   providers: [
     ProfileService,
@@ -24,6 +31,18 @@ import { UpdateProfileController } from './controllers/update-profile/update-pro
       provide: 'CreateProfileRepository',
       useClass: MikroCreateProfileRepository,
     },
+    {
+      provide: 'GetAllProfilesRepository',
+      useClass: MikroGetAllProfilesRepository,
+    },
+    {
+      provide: 'SoftDeleteProfileRepository',
+      useClass: MikroSoftDeleteProfileRepository,
+    },
+    {
+      provide: 'GetGoalsByStateRepository',
+      useClass: MikroGetFilteredGoalsRepository,
+    }
   ],
   exports: [ProfileService],
 })

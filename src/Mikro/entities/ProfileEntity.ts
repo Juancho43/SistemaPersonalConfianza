@@ -33,6 +33,16 @@ export class ProfileEntity {
   })
   goals = new Collection<GoalEntity>(this);
 
-  // El constructor vacío es recomendable para MikroORM
+  @Property({ fieldName: 'current', nullable: true })
+  current?: boolean | null;
+  @Property({
+    fieldName: 'updated_at',
+    onUpdate: () => new Date(),
+    nullable: true,
+  })
+  updatedAt?: Date | null;
+
+  @Property({ fieldName: 'deleted_at', nullable: true })
+  deletedAt?: Date | null;
   constructor() {}
 }

@@ -18,6 +18,8 @@ export class CreateGoalController {
         cost: 34,
         state: 'PENDIENTE',
         profileId: 'user-123',
+        type: 'BASICA',
+        deadline: '2024-12-31',
       },
     },
   })

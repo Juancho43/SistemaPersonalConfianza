@@ -11,6 +11,13 @@ import { CancelGoal } from '../../../core/Goal/Application/CancelGoal';
 import { ProfileService } from '../../profile/profile.service';
 import { UpdateGoalRequest } from '../../../core/Goal/Application/DTO/UpdateGoalRequest';
 import { CancelGoalRequest } from '../../../core/Goal/Application/DTO/CancelGoalRequest';
+import { CreateProgressiveGoal } from '../../../core/ProgressiveGoal/Application/CreateProgressiveGoal';
+import type {
+  CreateProgressiveGoalInterface
+} from '../../../core/ProgressiveGoal/Domain/Persistance/CreateProgressiveGoalInterface';
+import {
+  CreateProgressiveGoalRequest
+} from '../../../core/ProgressiveGoal/Application/DTO/CreateProgressiveGoalRequest';
 
 @Injectable()
 export class GoalService {
@@ -19,6 +26,9 @@ export class GoalService {
   private readonly completeGoal: CompleteGoal;
   private readonly updateGoal: UpdateGoal;
   private readonly cancelGoal: CancelGoal;
+
+  private readonly createProgressiveGoal: CreateProgressiveGoal;
+
   constructor(
     @Inject()
     private readonly profileService: ProfileService,
@@ -26,6 +36,8 @@ export class GoalService {
     private readonly repository: GetGoalByIdInterface,
     @Inject('CreateGoalRepository')
     private readonly createGoalRepository: CreateGoalInterface,
+    @Inject('CreateProgressiveGoalRepository')
+    private readonly createProgressiveGoalRepository: CreateProgressiveGoalInterface,
   ) {
     this.getGoalById = new GetGoalById(this.repository);
     this.createGoal = new CreateGoal(
@@ -48,6 +60,10 @@ export class GoalService {
       this.profileService.create,
       this.createGoalRepository,
     );
+    this.createProgressiveGoal = new CreateProgressiveGoal(
+      this.createGoal,
+      this.createProgressiveGoalRepository,
+    );
   }
 
   executeCompleteGoal(request: CompleteGoalRequest) {
@@ -64,5 +80,8 @@ export class GoalService {
   }
   executeGetGoalById(id: string) {
     return this.getGoalById.execute(id);
+  }
+  executeCreateProgressiveGoal(request: CreateProgressiveGoalRequest) {
+    return this.createProgressiveGoal.execute(request);
   }
 }

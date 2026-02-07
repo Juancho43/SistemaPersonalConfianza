@@ -16,7 +16,7 @@ export class MikroSaveGoalRepository implements CreateGoalInterface {
     console.log('2. goal.profile:', goal.profile);
     console.log('3. goal.profile?.id:', goal.profile?.id);
     console.log('4. goal.padre:', goal.padre);
-    console.log('5. goal.padre?.id:', goal.padre?.id);
+    console.log('5. goal.padre?.id:', goal.padre?.getGoal().id);
     console.log('6. goal.id:', goal.id);
 
     try {
@@ -43,8 +43,11 @@ export class MikroSaveGoalRepository implements CreateGoalInterface {
             console.log('12. Profile asignado');
           }
 
-          if (goal.padre?.id) {
-            entity.meta_padre = em.getReference(GoalEntity, goal.padre.id);
+          if (goal.padre?.getGoal().id) {
+            entity.meta_padre = em.getReference(
+              GoalEntity,
+              goal.padre.getGoal().id!,
+            );
           }
         } else {
           console.log('13. Creando nuevo');
@@ -56,8 +59,11 @@ export class MikroSaveGoalRepository implements CreateGoalInterface {
             entity.profile = em.getReference(ProfileEntity, goal.profile.id);
           }
 
-          if (goal.padre?.id) {
-            entity.meta_padre = em.getReference(GoalEntity, goal.padre.id);
+          if (goal.padre?.getGoal().id) {
+            entity.meta_padre = em.getReference(
+              GoalEntity,
+              goal.padre.getGoal().id!,
+            );
           }
 
           console.log('16. Antes de persist');
@@ -71,6 +77,7 @@ export class MikroSaveGoalRepository implements CreateGoalInterface {
       });
     } catch (error) {
       console.error('ERROR EN SAVE:', error);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       console.error('Stack:', error.stack);
       throw error;
     }

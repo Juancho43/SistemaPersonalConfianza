@@ -6,7 +6,7 @@ import { GoalState } from '../../../../core/Goal/Domain/GoalState';
 
 const createMockGoal = (id: string, cost: number, completed: boolean = false): Goal => {
   // Usamos Goal.create para simular la Goal real
-  const goal = Goal.create(`Goal ${id}`, cost, `Desc ${id}`, id);
+  const goal = Goal.create(`Goal ${id}`, cost, 'BASICA',`Desc ${id}`, id);
 
   // Asignamos las propiedades necesarias para la simulación
   // Nota: En un entorno real, solo usarías métodos públicos aquí.
@@ -44,13 +44,13 @@ describe('Profile Entity', () => {
     expect(profile.totalConfidence).toBe(0);
 
     // 2. Completa la primera Goal
-    profile.completeGoal(goal1.id!);
+    profile.completeGoal(goal1.getGoal().id!);
 
     // Afirmación A: El Total Confidence debe actualizarse con los puntos de goal1
     expect(profile.totalConfidence).toBe(goal1Puntos);
 
     // 3. Completa la segunda Goal
-    profile.completeGoal(goal2.id!);
+    profile.completeGoal(goal2.getGoal().id!);
 
     // Afirmación B: El Total Confidence debe ser la suma de goal1 + goal2
     expect(profile.totalConfidence).toBe(goal1Puntos + goal2Puntos); // 80
@@ -63,11 +63,11 @@ describe('Profile Entity', () => {
     profile.addGoal(goal);
 
     // 1. Completa la primera vez
-    profile.completeGoal(goal.id!);
+    profile.completeGoal(goal.getGoal().id!);
     expect(profile.totalConfidence).toBe(goalPuntos);
 
     // 2. Intenta completar de nuevo
-    profile.completeGoal(goal.id!);
+    profile.completeGoal(goal.getGoal().id!);
 
     // Afirmación: El total confidence no debe cambiar
     expect(profile.totalConfidence).toBe(goalPuntos);
@@ -101,13 +101,13 @@ describe('Profile Entity - Cancelar Goal', () => {
     profile.addGoal(completedGoal);
     profile.addGoal(pendingGoal);
 
-    profile.completeGoal(completedGoal.id!);
+    profile.completeGoal(completedGoal.getGoal().id!);
     expect(profile.totalConfidence).toBe(100);
 
     const returned = profile.cancelGoal(pendingGoal.id!);
-    expect(returned.id).toBe(pendingGoal.id);
+    expect(returned.id).toBe(pendingGoal.getGoal().id);
     expect(profile.totalConfidence).toBe(100 - (100 * 0.5));
-    expect(profile.goals.find((g) => g.id === pendingGoal.id)).toBeUndefined();
+    expect(profile.goals.find((g) => g.getGoal().id === pendingGoal.id)).toBeUndefined();
   });
 
   it('debería remover la Goal cancelada de la lista y devolver la misma instancia', () => {
@@ -121,7 +121,7 @@ describe('Profile Entity - Cancelar Goal', () => {
     const returned = profile.cancelGoal(goal.id!);
     expect(returned.id).toBe(goal.id);
     expect(profile.goals.length).toBe(before - 1);
-    expect(profile.goals.some((g) => g.id === goal.id)).toBe(false);
+    expect(profile.goals.some((g) => g.getGoal().id === goal.id)).toBe(false);
   });
 
   it('no debería aplicar penalización al cancelar una Goal que ya fue COMPLETADA (solo la remueve)', () => {
@@ -134,7 +134,7 @@ describe('Profile Entity - Cancelar Goal', () => {
 
     profile.cancelGoal(goal.id!);
     expect(profile.totalConfidence).toBe(80);
-    expect(profile.goals.find((g) => g.id === goal.id)).toBeUndefined();
+    expect(profile.goals.find((g) => g.getGoal().id === goal.id)).toBeUndefined();
   });
 
   it('debería lanzar un error si intenta cancelar una Goal inexistente', () => {
@@ -176,7 +176,7 @@ describe('Profile Entity - Actualizar Coste Subjetivo de Goal', () => {
     expect(profile.totalConfidence).toBe(100);
 
     profile.updateGoalSubjectiveCost(targetGoal.id!, 80);
-    expect(profile.goals.find((g) => g.id === targetGoal.id)!.coste_subjetivo).toBe(80);
+    expect(profile.goals.find((g) => g.getGoal().id === targetGoal.id)!.getGoal().coste_subjetivo).toBe(80);
     expect(profile.totalConfidence).toBe(100);
   });
 
@@ -193,7 +193,7 @@ describe('Profile Entity - Actualizar Coste Subjetivo de Goal', () => {
     expect(profile.totalConfidence).toBe(50);
 
     profile.updateGoalSubjectiveCost(targetGoal.id!, 70); // penalty = 30
-    expect(profile.goals.find((g) => g.id === targetGoal.id)!.coste_subjetivo).toBe(70);
+    expect(profile.goals.find((g) => g.getGoal().id === targetGoal.id)!.getGoal().coste_subjetivo).toBe(70);
     expect(profile.totalConfidence).toBe(20);
   });
 
@@ -222,7 +222,7 @@ describe('Profile Entity - Actualizar Coste Subjetivo de Goal', () => {
     expect(profile.totalConfidence).toBe(0);
 
     profile.updateGoalSubjectiveCost(goal.id!, 20); // penalty = 80
-    expect(profile.goals.find((g) => g.id === goal.id)!.coste_subjetivo).toBe(20);
+    expect(profile.goals.find((g) => g.getGoal().id === goal.id)!.getGoal().coste_subjetivo).toBe(20);
     expect(profile.totalConfidence).toBe(0 - 80);
   });
 });

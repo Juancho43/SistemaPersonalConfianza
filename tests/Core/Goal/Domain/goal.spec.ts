@@ -13,9 +13,9 @@ describe('Goal Entity', () => {
     const cost = 50;
     const description = 'Una meta de prueba';
     const id = '123-uuid-test';
-
+    const type = 'BASICA'
     // Ejecución con todos los parámetros
-    const goal = Goal.create(name, cost, description, id);
+    const goal = Goal.create(name, cost, type, description, id);
 
     // Afirmaciones
     expect(goal.id).toBe(id);
@@ -27,7 +27,7 @@ describe('Goal Entity', () => {
     expect(goal.penalizacion_restada).toBe(0);
 
     // Ejecución con descripción opcional omitida
-    const goalNoDesc = Goal.create(name, cost, undefined, '456');
+    const goalNoDesc = Goal.create(name, cost, 'BASICA',undefined, '456');
     expect(goalNoDesc.descripcion).toBeUndefined();
   });
 
@@ -51,7 +51,7 @@ describe('Goal Entity', () => {
   // --- Caso 3: Abandono Válido (desde PENDIENTE) ---
   test('marcar_abandonada establece el estado a ABANDONADA y aplica una penalización del 50% si el estado era PENDIENTE', () => {
     const cost = 80;
-    const goal = Goal.create('Abandon Me', cost, 'Desc', 'abandon-id');
+    const goal = Goal.create('Abandon Me', cost, 'BASICA','Desc', 'abandon-id');
 
     // Inicialización
     expect(goal.estado).toBe('PENDIENTE');
@@ -69,7 +69,7 @@ describe('Goal Entity', () => {
   // --- Caso 4: Abandono Inválido (Estado Incorrecto) ---
   test('marcar_abandonada no debe hacer nada (ni cambiar estado ni penalizar) si el estado no es PENDIENTE', () => {
     const cost = 30;
-    const goal = Goal.create('No Change', cost, 'Desc', 'no-change-id');
+    const goal = Goal.create('No Change', cost, 'BASICA','Desc', 'no-change-id');
 
     // Forzamos un estado que no es PENDIENTE (usando el setter refactorizado)
     goal.estado = GoalState.COMPLETED();
@@ -95,7 +95,7 @@ describe('Goal Entity - Completar Meta', () => {
   const createGoalMock = (id: string, cost: number, submetas: Goal[] = [], estado: string = 'PENDIENTE'): Goal => {
     // Necesitamos crear un mock que simule la Goal con sus submetas
     // Usamos la implementación de Goal.create, y luego forzamos el estado y submetas
-    const goal = Goal.create(`Goal ${id}`, cost, `Desc ${id}`, id);
+    const goal = Goal.create(`Goal ${id}`, cost, 'BASICA',`Desc ${id}`, id);
 
     // @ts-ignore: Acceso a propiedades privadas simuladas para el test
     goal._submetas = submetas;

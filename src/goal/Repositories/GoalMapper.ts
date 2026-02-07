@@ -1,6 +1,7 @@
 import { Goal } from '../../../core/Goal/Domain/Goal';
 import { GoalEntity } from '../../Mikro/entities/GoalEntity';
 import { GoalState } from '../../../core/Goal/Domain/GoalState';
+import { GoalType } from '../../../core/Goal/Domain/GoalType';
 
 export class GoalMapper {
   /**
@@ -13,6 +14,7 @@ export class GoalMapper {
     const goal = Goal.create(
       entity.nombre,
       entity.coste_subjetivo,
+      entity.tipo,
       entity.descripcion,
       entity.id, // Mapea el ID de la DB
     );
@@ -20,7 +22,8 @@ export class GoalMapper {
     goal.estado = GoalState.fromValue(entity.estado);
     goal.penalizacion_restada = entity.penalizacion_restada;
     goal.puntos_ganados = entity.puntos_ganados;
-
+    goal.tipo = GoalType.fromValue(entity.tipo);
+    goal.deadline = entity.deadLine ?? undefined;
     // Las propiedades de descripción y jerarquía se pueden manejar de forma optativa
     // si son necesarias en el objeto de dominio  if (entity.submetas && entity.submetas.isInitialized()) {
     //     goal.submetas = entity.submetas.getItems().map(submeta =>
@@ -56,12 +59,12 @@ export class GoalMapper {
       // (aunque para el guardado lo ideal es usar em.assign() con el objeto cargado)
       entity.id = domain.id;
     }
-
+    entity.tipo = domain.getType().getValue();
     entity.estado = domain.estado;
     entity.penalizacion_restada = domain.penalizacion_restada;
     entity.puntos_ganados = domain.puntos_ganados;
     entity.descripcion = domain.descripcion; // Asumiendo que agregas un getter para descripción
-
+    entity.deadLine = domain.deadline;
     return entity;
   }
 }

@@ -8,6 +8,11 @@ import { MikroGetGoalRepository } from './Repositories/MikroGetGoalRepository';
 import { ProfileModule } from '../profile/profile.module';
 import { MikroSaveGoalRepository } from './Repositories/MikroSaveGoalRepository';
 import { GetGoalByIdController } from './controllers/get-goal-by-id/get-goal-by-id.controller';
+import { GetGoalStatesController } from './controllers/get-goal-states/get-goal-states.controller';
+import { GetGoalsByStateController } from './controllers/get-goals-by-state/get-goals-by-state.controller';
+import { CreateProgressiveGoalController } from './controllers/create-progressive-goal/create-progressive-goal.controller';
+import { GetGoalTypesController } from './controllers/get-goal-types/get-goal-types.controller';
+import { MikroSaveProgressiveGoalRepository } from './Repositories/MikroSaveProgressiveGoalRepository';
 
 @Module({
   controllers: [
@@ -16,6 +21,10 @@ import { GetGoalByIdController } from './controllers/get-goal-by-id/get-goal-by-
     UpdateGoalController,
     CancelGoalController,
     GetGoalByIdController,
+    GetGoalStatesController,
+    GetGoalsByStateController,
+    CreateProgressiveGoalController,
+    GetGoalTypesController,
   ],
   imports: [ProfileModule],
   providers: [
@@ -27,6 +36,10 @@ import { GetGoalByIdController } from './controllers/get-goal-by-id/get-goal-by-
     {
       provide: 'CreateGoalRepository',
       useClass: MikroSaveGoalRepository,
+    },
+    {
+      provide: 'CreateProgressiveGoalRepository',
+      useClass: MikroSaveProgressiveGoalRepository,
     },
   ],
 })

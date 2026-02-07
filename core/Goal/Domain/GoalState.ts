@@ -18,7 +18,9 @@ export class GoalState {
    */
   public static fromValue(state: string): GoalState {
     if (!GoalState.isValid(state)) {
-      throw new Error(`Estado de Goal inválido: ${state}. Debe ser PENDIENTE, COMPLETADA o ABANDONADA.`);
+      throw new Error(
+        `Estado de Goal inválido: ${state}. Debe ser PENDIENTE, COMPLETADA o ABANDONADA.`,
+      );
     }
     // La aserción 'as GoalStateValue' es segura gracias a la verificación isValid
     return new GoalState(state as GoalStateValue);
@@ -47,9 +49,23 @@ export class GoalState {
   }
 
   /**
+   * Devuelve todos los valores válidos de GoalState.
+   *
+   * Proporciona la lista canónica de estados permitidos para validación,
+   * uso en la interfaz (por ejemplo, select/dropdown) o en pruebas.
+   *
+   * @returns {string[]} Array con los valores:
+   *   - 'PENDIENTE'
+   *   - 'COMPLETADA'
+   *   - 'ABANDONADA'
+   */
+  public static getAllValid(): string[] {
+    return ['PENDIENTE', 'COMPLETADA', 'ABANDONADA'];
+  }
+  /**
    * Devuelve el valor primitivo del estado (el string).
    */
-  public getValue(): GoalStateValue {
+  public getValue(): string {
     return this.value;
   }
 

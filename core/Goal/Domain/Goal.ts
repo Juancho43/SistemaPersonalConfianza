@@ -1,20 +1,25 @@
 import { GoalState } from './GoalState';
 import { Profile } from '../../Profile/Domain/Profile';
+import { GoalType } from './GoalType';
+import { Goaleable } from '../Goaleable';
 
-export class Goal {
+export class Goal implements Goaleable {
   private _id?: string;
   private _nombre: string;
   private _descripcion?: string;
   private _coste_subjetivo: number;
   private _estado: GoalState;
+  private _deadline?: Date;
   private _penalizacion_restada: number = 0;
   private _puntos_ganados: number = 0;
-  private _padre: Goal | null = null;
-  private _submetas: Goal[] = [];
+  private _padre: Goaleable | null = null;
+  private _submetas: Goaleable[] = [];
   private _profile: Profile;
+  private _type: GoalType;
   private constructor(
     nombre: string,
     cs: number,
+    type: string,
     descripcion?: string,
     id?: string,
   ) {
@@ -25,21 +30,43 @@ export class Goal {
     this._coste_subjetivo = cs;
     this._descripcion = descripcion;
     this._id = id;
+    this._type = GoalType.fromValue(type);
+    this._estado = GoalState.PENDING();
   }
+  getId(): string | undefined {
+    return this._id;
+  }
+  getTotalPoints(): number {
+    return this._puntos_ganados;
+  }
+  getGoal(): Goal {
+    return this;
+  }
+  getState(): GoalState {
+    return this._estado;
+  }
+  getType(): GoalType {
+    return this._type;
+  }
+
   public static create(
     nombre: string,
     cs: number,
+    type: string = 'BASICA',
     descripcion?: string,
     id?: string,
   ): Goal {
-    return new Goal(nombre, cs, descripcion, id);
+    return new Goal(nombre, cs, type, descripcion, id);
   }
 
-  get padre(): Goal | null {
+  get padre(): Goaleable | null {
     return this._padre;
   }
 
-  set padre(value: Goal | null) {
+  set tipo(value: GoalType) {
+    this._type = value;
+  }
+  set padre(value: Goaleable | null) {
     this._padre = value;
   }
   public marcar_abandonada(): void {
@@ -49,7 +76,7 @@ export class Goal {
 
       // Cancelar también las submetas (propaga recursivamente)
       for (const sub of this._submetas) {
-        sub.marcar_abandonada();
+        sub.getGoal().marcar_abandonada();
       }
     }
   }
@@ -104,17 +131,17 @@ export class Goal {
   set descripcion(value: string) {
     this._descripcion = value;
   }
-  get Submetas(): Goal[] {
+  get Submetas(): Goaleable[] {
     return this._submetas;
   }
-  set Submetas(value: Goal[]) {
+  set Submetas(value: Goaleable[]) {
     this._submetas = value;
   }
-  nuevaSubMeta(submeta: Goal): void {
+  nuevaSubMeta(submeta: Goaleable): void {
     this.Submetas.push(submeta);
   }
 
-  get submetas(): Goal[] {
+  get submetas(): Goaleable[] {
     return this._submetas;
   }
 
@@ -122,7 +149,7 @@ export class Goal {
     return this._profile;
   }
 
-  set submetas(value: Goal[]) {
+  set submetas(value: Goaleable[]) {
     this._submetas = value;
   }
 
@@ -130,11 +157,22 @@ export class Goal {
     this._profile = value;
   }
 
+  get deadline(): Date | undefined {
+    return this._deadline;
+  }
+
+  set deadline(value: Date | undefined) {
+    this._deadline = value;
+  }
+
   public markAsComplete(): number {
+    if (this.getState().equals(GoalState.COMPLETED())) {
+      return 0; // already completed — do nothing
+    }
     // 1. Validación de Precondición (CA 2.2)
     if (this._submetas.length > 0) {
       const submetasPendientes = this._submetas.filter(
-        (sub) => sub.estado !== 'COMPLETADA',
+        (sub) => sub.getGoal().estado !== 'COMPLETADA',
       );
 
       if (submetasPendientes.length > 0) {
@@ -156,5 +194,9 @@ export class Goal {
   }
   get puntosGanados(): number {
     return this._puntos_ganados;
+  }
+
+  get type(): GoalType {
+    return this._type;
   }
 }

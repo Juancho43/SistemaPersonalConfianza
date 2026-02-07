@@ -1,18 +1,12 @@
 import { Goal } from '../../Goal/Domain/Goal';
 import { GoalState } from '../../Goal/Domain/GoalState';
+import { Goaleable } from '../../Goal/Goaleable';
 
 export class Profile {
-  get id(): string {
-    return this._id ?? '';
-  }
-
-  set id(value: string) {
-    this._id = value;
-  }
   private _id?: string;
   private _name: string = 'Guest';
   private _totalConfidence: number = 0;
-  private _goals: Goal[] = [];
+  private _goals: Goaleable[] = [];
 
   private constructor(name: string, id?: string) {
     this._id = id! ?? '';
@@ -24,22 +18,36 @@ export class Profile {
   }
 
   // Getters para los tests
+  get id(): string {
+    return this._id ?? '';
+  }
+
+  set id(value: string) {
+    this._id = value;
+  }
   public get name(): string {
     return this._name;
   }
   public get totalConfidence(): number {
     return this._totalConfidence;
   }
-  public get goals(): Goal[] {
+  public get goals(): Goaleable[] {
     return this._goals;
   }
 
   // Método para agregar la meta
   public addGoal(goal: Goal): void {
-    if (goal.padre && goal.padre.estado != GoalState.PENDING().getValue()) {
+    if (
+      goal.padre &&
+      goal.padre?.getGoal().estado != GoalState.PENDING().getValue()
+    ) {
       throw new Error('Cannot add a subgoal to a non-pending parent goal.');
     }
     this._goals.push(goal);
+  }
+
+  public newGoal(goal: Goaleable): void {
+    this.addGoal(goal.getGoal());
   }
 
   // Método clave para completar la meta y sumar puntos
@@ -52,14 +60,17 @@ export class Profile {
 
     // Precondición: Solo suma puntos si la meta no estaba completada.
     // Aquí delegamos la lógica de negocio a la entidad Goal.
-    const pointsGained = goalToComplete.markAsComplete();
+    const pointsGained = goalToComplete.getGoal().markAsComplete();
 
     // Si la meta devuelve puntos (es decir, no estaba completada previamente),
     // actualizamos el totalConfidence.
-    if (pointsGained > 0) {
+    if (
+      pointsGained > 0 &&
+      goalToComplete.getState().equals(GoalState.COMPLETED())
+    ) {
       this._totalConfidence += pointsGained;
     }
-    return goalToComplete;
+    return goalToComplete.getGoal();
   }
 
   public cancelGoal(goalId: string): Goal {
@@ -70,14 +81,15 @@ export class Profile {
 
     const penaltyPercentage = 0.5; // 50% del Coste Subjetivo
 
-    if (goalToCancel.estado === 'PENDIENTE') {
-      const penalty = goalToCancel.coste_subjetivo * penaltyPercentage;
+    if (goalToCancel.getState().getValue() === 'PENDIENTE') {
+      const penalty =
+        goalToCancel.getGoal().coste_subjetivo * penaltyPercentage;
       this._totalConfidence -= penalty;
     }
 
-    this._goals = this._goals.filter((g) => g.id !== goalId);
-    goalToCancel.marcar_abandonada();
-    return goalToCancel;
+    this._goals = this._goals.filter((g) => g.getId() !== goalId);
+    goalToCancel.getGoal().marcar_abandonada();
+    return goalToCancel.getGoal();
   }
   public updateGoalSubjectiveCost(
     goalId: string,
@@ -89,13 +101,13 @@ export class Profile {
       throw new Error(`Goal with ID ${goalId} not found in profile.`);
     }
 
-    if (goal.estado !== 'PENDIENTE') {
+    if (goal.getState().getValue() !== 'PENDIENTE') {
       throw new Error(
         `Cannot update subjective cost for goal ${goalId} as it is not in PENDIENTE state.`,
       );
     }
 
-    const previousCost = goal.coste_subjetivo;
+    const previousCost = goal.getGoal().coste_subjetivo;
 
     // Only apply penalty if the new cost is lower than the previous cost (overestimation)
     if (newSubjectiveCost < previousCost) {
@@ -104,8 +116,8 @@ export class Profile {
     }
 
     // Update the goal's subjective cost
-    goal.coste_subjetivo = newSubjectiveCost;
-    return goal;
+    goal.getGoal().coste_subjetivo = newSubjectiveCost;
+    return goal.getGoal();
   }
 
   set name(value: string) {
@@ -116,14 +128,14 @@ export class Profile {
     this._totalConfidence = value;
   }
 
-  set goals(value: Goal[]) {
+  set goals(value: Goaleable[]) {
     this._goals = value;
   }
-  private hasGoal(goalId: string): Goal | null {
-    const findIn = (goals: Goal[]): Goal | null => {
+  private hasGoal(goalId: string): Goaleable | null {
+    const findIn = (goals: Goaleable[]): Goaleable | null => {
       for (const g of goals) {
-        if (g.id === goalId) return g;
-        const children = g.submetas;
+        if (g.getId() === goalId) return g;
+        const children = g.getGoal().submetas;
         if (Array.isArray(children)) {
           const found = findIn(children);
           if (found) return found;

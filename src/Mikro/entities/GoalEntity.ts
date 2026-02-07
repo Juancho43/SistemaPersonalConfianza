@@ -30,6 +30,8 @@ export class GoalEntity {
   penalizacion_restada: number = 0;
 
   @Property()
+  tipo: string = 'BASICA';
+  @Property()
   puntos_ganados: number = 0;
   @ManyToOne(() => ProfileEntity, { inversedBy: 'goals' })
   profile!: ProfileEntity;
@@ -41,12 +43,17 @@ export class GoalEntity {
   @OneToMany(() => GoalEntity, (meta) => meta.meta_padre)
   submetas = new Collection<GoalEntity>(this);
 
+  @Property({ nullable: true })
+  deadLine?: Date = new Date();
+
   // Timestamps opcionales pero recomendados
   @Property()
   createdAt: Date = new Date();
 
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
+  @Property({ fieldName: 'deleted_at', nullable: true })
+  deletedAt?: Date | null;
 
   constructor(
     nombre: string,

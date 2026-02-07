@@ -2,8 +2,9 @@ import { CompleteGoalRequest } from './DTO/CompleteGoalRequest';
 import { GetProfileById } from '../../Profile/Application/GetProfileById';
 import { CreateProfileInterface } from '../../Profile/Domain/Persistance/CreateProfileInterface';
 import { CreateGoalInterface } from '../Domain/Persistance/CreateGoalInterface';
+import { IUseCase } from '../../Shared/IUseCase';
 
-export class CompleteGoal {
+export class CompleteGoal implements IUseCase<CompleteGoalRequest, number>{
   constructor(
     private readonly profileById: GetProfileById,
     private readonly profileRepository: CreateProfileInterface,

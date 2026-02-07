@@ -2,8 +2,9 @@ import { GetProfileById } from '../../Profile/Application/GetProfileById';
 import { CreateProfileInterface } from '../../Profile/Domain/Persistance/CreateProfileInterface';
 import { CancelGoalRequest } from './DTO/CancelGoalRequest';
 import { CreateGoalInterface } from '../Domain/Persistance/CreateGoalInterface';
+import { IUseCase } from '../../Shared/IUseCase';
 
-export class CancelGoal {
+export class CancelGoal implements IUseCase<CancelGoalRequest, number>{
   constructor(
     private readonly saveGoal: CreateGoalInterface,
     private readonly getProfile: GetProfileById,
@@ -16,7 +17,7 @@ export class CancelGoal {
     await this.saveGoal.save(canceledGoal);
     if (canceledGoal.submetas && canceledGoal.submetas.length) {
       await Promise.all(
-        canceledGoal.submetas.map((sg) => this.saveGoal.save(sg)),
+        canceledGoal.submetas.map((sg) => this.saveGoal.save(sg.getGoal())),
       );
     }
     await this.saveProfile.save(profile);
